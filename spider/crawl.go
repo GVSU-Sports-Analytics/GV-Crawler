@@ -6,6 +6,7 @@ import (
 	"net/http"
 )
 
+// right now just starting with baseball
 const startUrl = "https://gvsulakers.com/sports/baseball/schedule/2023"
 
 type Spider struct {
@@ -28,10 +29,15 @@ func GetLink(url string) (*goquery.Document, error) {
 	return doc, nil
 }
 
-func (s *Spider) GetYears() ([]string, error) {
+func (s *Spider) GetYears() error {
 	doc, err := GetLink(startUrl)
 	if err != nil {
-		return nil, fmt.Errorf("error getting link: %v", err)
+		return fmt.Errorf("error getting link: %v", err)
 	}
-	return nil, nil
+
+	// find dropdown menu
+	dd := doc.Find("div .sidearm-schedule-select")
+	fmt.Println(dd.Text())
+
+	return nil
 }
