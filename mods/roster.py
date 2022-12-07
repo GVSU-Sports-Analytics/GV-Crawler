@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 import datetime
-from scrape import soup
+from scrape import soup, flat, drop_duplicates
 from player import Player
 from pprint import pprint
 from tqdm import tqdm
@@ -12,43 +12,68 @@ START_SOUP: BeautifulSoup = soup(START_URL)
 
 
 def roster_year_links() -> list[str]:
-    select = START_SOUP.find("select", attrs={"id": "ddl_past_rosters"})
-    return [GVSU_PREFIX + opt["value"] for opt in select.find_all("option")]
+    select = START_SOUP.find(
+        "select",
+        attrs={"id": "ddl_past_rosters"}
+    )
+    return drop_duplicates([GVSU_PREFIX + opt["value"] for opt in select.find_all("option")])
 
 
 def get_player_divs(roster_soup: BeautifulSoup) -> list[BeautifulSoup]:
-    article = roster_soup.find(
-        "article",
-        attrs={"class": "sidearm-roster-view"}
+    player_list = roster_soup.find(
+        "ul",
+        attrs={"class": "sidearm-roster-players"}
     )
-
-    return article.find_all(
-        "div",
-        attrs={
-            "class": "sidearm-roster-player-container"
-        }
+    return player_list.find_all(
+        "li",
+        attrs={"class": "sidearm-roster-player"}
     )
 
 
 def create_players(player_divs: list[BeautifulSoup]) -> list[Player]:
     players: list[Player] = []
+
     for player in player_divs:
         position_div = player.find(
             "div", attrs={"class", "sidearm-roster-player-pertinents"}
         )
 
-        height = position_div.find("span", attrs={"class": "sidearm-roster-player-height"}).text
-        weight = position_div.find("span", attrs={"class": "sidearm-roster-player-weight"}).text
-        throws, hits = position_div.find("span", attrs={"class": "sidearm-roster-player-custom1"}).text.split("/")
-        name = position_div.find("div", attrs={"class": "sidearm-roster-player-name"}).text.strip().replace("\n", "")
+        name = position_div.find("div", attrs={
+            "class": "sidearm-roster-player-name"
+        }).text.strip().replace("\n", "").replace("\t", "").replace("\r", "").replace(" ", "").strip()
+
+        try:
+            height = position_div.find("span", attrs={"class": "sidearm-roster-player-height"}).text
+        except AttributeError:
+            height = None
+        try:
+            weight = position_div.find("span", attrs={"class": "sidearm-roster-player-weight"}).text
+        except AttributeError:
+            weight = None, None
+        try:
+            throws, hits = position_div.find("span", attrs={"class": "sidearm-roster-player-custom1"}).text.split("/")
+        except AttributeError:
+            throws, hits = None, None
+        try:
+            _, _, academic_yr, hometown, previous_school, *_ = position_div.find("div", attrs={
+                "class": "sidearm-roster-player-other"
+            }).text.replace(" ", "").split("\n")
+        except AttributeError:
+            academic_yr, hometown, previous_school = None, None, None
+
         players.append(
             Player(
                 name=name,
                 hits=hits,
-                throws=throws
+                throws=throws,
+                height=height,
+                weight=weight,
+                academic_year=academic_yr,
+                previous_school=hometown,
+                home_town=previous_school
             )
         )
-        return players
+    return players
 
 
 # main function to get roster data
@@ -63,4 +88,5 @@ def roster():
 
 
 if __name__ == "__main__":
-    pprint(roster())
+    all_players = roster()
+    pprint(all_players[-1])

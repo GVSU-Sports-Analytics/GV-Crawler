@@ -10,3 +10,15 @@ def soup(url: str) -> request:
         )
     except HTTPError or ConnectionError as e:
         raise e(f"Problem in get request to \"{url}\"")
+
+
+def flat(l: list) -> list:
+    f = []
+    for sub in l:
+        for i in sub:
+            f.append(i)
+    return f
+
+
+def drop_duplicates(l: list) -> list:
+    return [*set(l)]
