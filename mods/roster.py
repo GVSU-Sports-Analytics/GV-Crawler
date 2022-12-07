@@ -5,11 +5,15 @@ from player import Player
 
 ROSTER_PREFIX: str = "https://gvsulakers.com/sports/baseball/roster/"
 START_URL: str = ROSTER_PREFIX + str(datetime.date.today().year)
+START_SOUP: BeautifulSoup = soup(START_URL)
 
 
-def get_player_divs(roster_url: str) -> list[BeautifulSoup]:
-    html = soup(roster_url)
-    article = html.find(
+def roster_year_links() -> list[str]:
+    print(START_SOUP.find("select", attrs={"id": "ddl_past_rosters"}).text)
+
+
+def get_player_divs(roster_soup: BeautifulSoup) -> list[BeautifulSoup]:
+    article = roster_soup.find(
         "article",
         attrs={"class": "sidearm-roster-view"}
     )
@@ -45,13 +49,15 @@ def create_players(player_divs: list[BeautifulSoup]) -> list[Player]:
                 _img=""
             )
         )
+    return players
 
 
 # main function to get roster data
 def roster():
-    return
+    pds = get_player_divs(START_SOUP)
+    return create_players(pds)
 
 
 if __name__ == "__main__":
-    player_divs = get_player_divs(START_URL)
-    create_players(player_divs)
+    roster_year_links()
+    # print(roster())
