@@ -2,14 +2,18 @@ from bs4 import BeautifulSoup
 import datetime
 from scrape import soup
 from player import Player
+from pprint import pprint
+from tqdm import tqdm
 
-ROSTER_PREFIX: str = "https://gvsulakers.com/sports/baseball/roster/"
+GVSU_PREFIX: str = "https://gvsulakers.com"
+ROSTER_PREFIX: str = GVSU_PREFIX + "/sports/baseball/roster/"
 START_URL: str = ROSTER_PREFIX + str(datetime.date.today().year)
 START_SOUP: BeautifulSoup = soup(START_URL)
 
 
 def roster_year_links() -> list[str]:
-    print(START_SOUP.find("select", attrs={"id": "ddl_past_rosters"}).text)
+    select = START_SOUP.find("select", attrs={"id": "ddl_past_rosters"})
+    return [GVSU_PREFIX + opt["value"] for opt in select.find_all("option")]
 
 
 def get_player_divs(roster_soup: BeautifulSoup) -> list[BeautifulSoup]:
@@ -30,34 +34,33 @@ def create_players(player_divs: list[BeautifulSoup]) -> list[Player]:
     players: list[Player] = []
     for player in player_divs:
         position_div = player.find(
-            "div", attrs={"class", "sidearm-roster-player-position"}
+            "div", attrs={"class", "sidearm-roster-player-pertinents"}
         )
-        (pos, _, height, weight, handedness) = position_div.text.strip().replace(
-            " ", "").replace("\r", "").replace(
-            "\t", "").replace("\n\n", "\n").split("\n")
 
+        height = position_div.find("span", attrs={"class": "sidearm-roster-player-height"}).text
+        weight = position_div.find("span", attrs={"class": "sidearm-roster-player-weight"}).text
+        throws, hits = position_div.find("span", attrs={"class": "sidearm-roster-player-custom1"}).text.split("/")
+        name = position_div.find("div", attrs={"class": "sidearm-roster-player-name"}).text.strip().replace("\n", "")
         players.append(
             Player(
-                _pos=pos,
-                _height=height,
-                _weight=weight,
-                _throws=handedness.split("/")[0],
-                _hits=handedness.split("/")[1],
-                _academic_year="",
-                _previous_school="",
-                _name="",
-                _img=""
+                name=name,
+                hits=hits,
+                throws=throws
             )
         )
-    return players
+        return players
 
 
 # main function to get roster data
 def roster():
-    pds = get_player_divs(START_SOUP)
-    return create_players(pds)
+    years = roster_year_links()
+    players = []
+    for year in tqdm(years):
+        s = soup(year)
+        pds = get_player_divs(s)
+        players.append(create_players(pds))
+    return players
 
 
 if __name__ == "__main__":
-    roster_year_links()
-    # print(roster())
+    pprint(roster())
