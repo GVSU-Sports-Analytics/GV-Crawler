@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 import datetime
-from scrape import soup, flat, drop_duplicates
+from scrape import soup
 from player import Player
 from pprint import pprint
 from tqdm import tqdm
