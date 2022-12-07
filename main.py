@@ -1,4 +1,5 @@
-from roster import roster
+from mods.roster import roster
+
 
 def main():
     return
