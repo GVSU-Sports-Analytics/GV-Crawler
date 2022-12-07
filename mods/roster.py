@@ -16,7 +16,7 @@ def roster_year_links() -> list[str]:
         "select",
         attrs={"id": "ddl_past_rosters"}
     )
-    return drop_duplicates([GVSU_PREFIX + opt["value"] for opt in select.find_all("option")])
+    return [GVSU_PREFIX + opt["value"] for opt in select.find_all("option")]
 
 
 def get_player_divs(roster_soup: BeautifulSoup) -> list[BeautifulSoup]:
