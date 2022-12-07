@@ -37,7 +37,7 @@ func (s *Spider) GetYears() error {
 
 	// find dropdown menu
 	dd := doc.Find("div .sidearm-schedule-select")
-	fmt.Println(dd.Text())
+	fmt.Println(CleanText(dd.Text()))
 
 	return nil
 }
