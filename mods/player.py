@@ -9,6 +9,7 @@ Player: namedtuple = namedtuple(
         "height",
         "weight",
         "home_town",
-        "previous_school"
+        "previous_school",
+        "image"
     ]
 )
