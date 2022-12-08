@@ -1,15 +1,15 @@
-from collections import namedtuple
+from dataclasses import dataclass, field
 
-Player: namedtuple = namedtuple(
-    "Player", [
-        "name",
-        "hits",
-        "throws",
-        "academic_year",
-        "height",
-        "weight",
-        "home_town",
-        "previous_school",
-        "image"
-    ]
-)
+
+
+@dataclass
+class Player:
+	name: str
+	hits: str
+	throws: str
+	academic_year: str
+	height: str
+	weight: str
+	home_town: str
+	previous_school: str
+	image: str
