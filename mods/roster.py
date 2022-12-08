@@ -1,10 +1,9 @@
 from bs4 import BeautifulSoup
 import datetime
-from scrape import soup, clean
+from scrape import soup, clean, GVSU_PREFIX
 from player import Player
 from tqdm import tqdm
 
-GVSU_PREFIX: str = "https://gvsulakers.com"
 ROSTER_PREFIX: str = GVSU_PREFIX + "/sports/baseball/roster/"
 START_URL: str = ROSTER_PREFIX + str(datetime.date.today().year)
 START_SOUP: BeautifulSoup = soup(START_URL)

@@ -1,6 +1,8 @@
 from requests import request, get, HTTPError, ConnectionError
 from bs4 import BeautifulSoup
 
+GVSU_PREFIX: str = "https://gvsulakers.com"
+
 
 def soup(url: str) -> request:
     try:
