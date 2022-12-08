@@ -3,7 +3,7 @@ goal is to scrape the play by play data
 for each of the games in gv baseball history
 """
 
-from scrape import soup, clean, GVSU_PREFIX
+from scrape import soup, GVSU_PREFIX
 from game import Game
 from pprint import pprint
 from tqdm import tqdm
@@ -54,7 +54,25 @@ def get_pbp(box_score_soup):
         "div",
         attrs={"id": "inning-all"}
     )
-    print(all_pbp.text)
+    innings = all_pbp.find_all(
+        "table",
+        attrs={"class": "play-by-play"}
+    )
+
+    pbp = {}
+    for i in innings:
+        inn = i.find("caption").text
+
+        rows = i.find_all("tr")
+        pbp[inn] = []
+
+        for r in rows:
+            try:
+                pbp[inn].append(r.find("td").text)
+            except AttributeError:
+                continue
+
+    return pbp
 
 
 # main function of this module
@@ -68,7 +86,8 @@ def schedule() -> list[Game]:
 
         for b in bs:
             bs_soup = soup(b)
-            get_pbp(bs_soup)
+            pbp = get_pbp(bs_soup)
+            pprint(pbp)
 
     return games
 
