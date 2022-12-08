@@ -4,6 +4,7 @@ for each of the games in gv baseball history
 """
 
 from scrape import soup, GVSU_PREFIX
+import pandas as pd
 from game import Game
 from pprint import pprint
 from tqdm import tqdm
@@ -49,7 +50,7 @@ def box_score_links(yr_link_soup) -> (list[str], list[str]):
     )
 
 
-def get_pbp(box_score_soup):
+def get_pbp(box_score_soup) -> dict[str, dict[str, list]]:
     all_pbp = box_score_soup.find(
         "div",
         attrs={"id": "inning-all"}
@@ -71,8 +72,15 @@ def get_pbp(box_score_soup):
                 pbp[inn].append(r.find("td").text)
             except AttributeError:
                 continue
-
     return pbp
+
+
+def get_info(box_score_soup) -> dict[str, str]:
+    return
+
+
+def get_composite() -> pd.DataFrame:
+    return
 
 
 # main function of this module
@@ -87,7 +95,6 @@ def schedule() -> list[Game]:
         for b in bs:
             bs_soup = soup(b)
             pbp = get_pbp(bs_soup)
-            pprint(pbp)
 
     return games
 
