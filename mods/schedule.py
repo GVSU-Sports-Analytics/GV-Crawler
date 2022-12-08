@@ -3,8 +3,7 @@ goal is to scrape the play by play data
 for each of the games in gv baseball history
 """
 
-from scrape import soup, GVSU_PREFIX
-import pandas as pd
+from scrape import soup, clean, GVSU_PREFIX
 from game import Game
 from pprint import pprint
 from tqdm import tqdm
@@ -50,7 +49,7 @@ def box_score_links(yr_link_soup) -> (list[str], list[str]):
     )
 
 
-def get_pbp(box_score_soup) -> dict[str, dict[str, list]]:
+def get_pbp(box_score_soup) -> dict[any, list]:
     all_pbp = box_score_soup.find(
         "div",
         attrs={"id": "inning-all"}
@@ -76,10 +75,18 @@ def get_pbp(box_score_soup) -> dict[str, dict[str, list]]:
 
 
 def get_info(box_score_soup) -> dict[str, str]:
+    info_panel = box_score_soup.find("div", attrs={"class": "panel"})
+    dts = [d.text for d in info_panel.find_all("dt")]
+    dds = [d.text for d in info_panel.find_all("dd")]
+    # each dt is like a column name and each dd is like its data point
+    return dict(zip(dts, dds))
+
+
+def get_composite():
     return
 
 
-def get_composite() -> pd.DataFrame:
+def get_pitching():
     return
 
 
@@ -95,6 +102,8 @@ def schedule() -> list[Game]:
         for b in bs:
             bs_soup = soup(b)
             pbp = get_pbp(bs_soup)
+            info = get_info(bs_soup)
+            print(info)
 
     return games
 
