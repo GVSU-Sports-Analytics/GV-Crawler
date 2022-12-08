@@ -3,18 +3,16 @@ goal is to scrape the play by play data
 for each of the games in gv baseball history
 """
 
-from scrape import soup, GVSU_PREFIX
+from scrape import soup, clean, GVSU_PREFIX
+import pandas as pd
 from game import Game
 from pprint import pprint
-from tqdm import tqdm
 import datetime
 
-START_URL: str = GVSU_PREFIX + \
-                 "/sports/baseball/schedule/" + \
-                 str(datetime.date.today().year)
+START_URL = GVSU_PREFIX + "/sports/baseball/schedule/" + str(datetime.date.today().year)
 
 
-def get_schedule_years():
+def get_schedule_years() -> list[str]:
     s = soup(START_URL)
     opts = s.find(
         "select",
@@ -97,14 +95,20 @@ def get_pitching(box_score_soup):
         "class": "panel",
         "aria-label": "Team Individual Pitching Statistics"
     }).find_all("table")
-
-    tbls: list[dict[str, str]] = []
+    tbls = []
     for tbl in tables:
-        data = tbl.find_all("td", attrs={"class": "text-center"})
-        dm = {}
-        for d in data:
-            dm[d["data-label"]] = d.text
-        tbls.append(dm)
+        rows = tbl.find_all("tr")
+        cols = [th.text for th in rows.pop(0)]
+
+        p = {}
+        for i, row in enumerate(rows):
+            try:
+                p[row.find("a", attrs={"class": "boxscore_player_link"}).text] = [
+                    td.text for td in rows[i].find_all("td")
+                ]
+            except AttributeError:
+                continue
+        tbls.append(p)
     return tbls
 
 
@@ -117,7 +121,7 @@ def schedule() -> list[Game]:
         yr_sewp = soup(yr)
 
         # think that we may want to get images from the bo
-        # x score soup itself so we can match them with the data
+        # x score soup itself, so we can match them with the data
 
         bs, imgs = box_score_links(yr_sewp)
 

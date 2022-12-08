@@ -9,7 +9,7 @@ def soup(url: str) -> request:
     try:
         return BeautifulSoup(
             get(url, headers=random_headers()).text,
-            features="html.parser"
+            features="lxml"
         )
     except HTTPError or ConnectionError as e:
         raise e(f"Problem in get request to \"{url}\"")
