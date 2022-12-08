@@ -8,7 +8,7 @@ GVSU_PREFIX: str = "https://gvsulakers.com"
 def soup(url: str) -> request:
     try:
         return BeautifulSoup(
-            get(url, headers=random.choice(headers)).text,
+            get(url, headers=random_headers()).text,
             features="html.parser"
         )
     except HTTPError or ConnectionError as e:
@@ -28,6 +28,10 @@ headers = {
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/601.3.9 (KHTML, like Gecko) Version/9.0.2 Saf    ari/601.3.9"
     }
 }
+
+
+def random_headers():
+    return headers[random.choice(list(headers.keys()))]
 
 
 def clean(s: str) -> str:

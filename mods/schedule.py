@@ -43,7 +43,6 @@ def box_score_links(yr_link_soup) -> (list[str], list[str]):
             images.append(GVSU_PREFIX + div.find("img")["data-src"])
         except TypeError:
             continue
-
     return (
         [GVSU_PREFIX + i["href"] for i in a_s],
         images
@@ -51,14 +50,11 @@ def box_score_links(yr_link_soup) -> (list[str], list[str]):
 
 
 def get_pbp(box_score_soup):
-    inning_tbls = box_score_soup.find_all(
-        "table",
-        attrs={"class": "sidearm-table-play-by-play"}
+    all_pbp = box_score_soup.find(
+        "div",
+        attrs={"id": "inning-all"}
     )
-
-    pbp = {}
-    for inn in inning_tbls:
-        print(inn.find("caption").text)
+    print(all_pbp.text)
 
 
 # main function of this module
