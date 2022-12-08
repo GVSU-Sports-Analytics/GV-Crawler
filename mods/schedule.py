@@ -21,12 +21,22 @@ def get_schedule_years():
     return [GVSU_PREFIX + v["value"] for v in opts]
 
 
-def box_score_links(yr_link_soup) -> list[str]:
+def box_score_links(yr_link_soup) -> (list[str], list[str]):
+    # opponent images
+    d = yr_link_soup.find_all(
+        "div",
+        attrs={"class": "sidearm-schedule-game-row"}
+    )
+
+    # find box score links
     a_s = [li.find("a", href=True) for li in yr_link_soup.find_all(
         "li",
         attrs={"class": "sidearm-schedule-game-links-boxscore"}
     )]
-    return [GVSU_PREFIX + i["href"] for i in a_s]
+    return (
+        [GVSU_PREFIX + i["href"] for i in a_s],
+        [GVSU_PREFIX + i.find("img")["data-src"] for i in d]
+    )
 
 
 # main function of this module
@@ -34,8 +44,9 @@ def schedule():
     yrs = get_schedule_years()
     for yr in yrs:
         yr_sewp = soup(yr)
-        bs = box_score_links(yr_sewp)
+        bs, imgs = box_score_links(yr_sewp)
         pprint(bs)
+        pprint(imgs)
 
 
 if __name__ == "__main__":
