@@ -3,7 +3,7 @@ goal is to scrape the play by play data
 for each of the games in gv baseball history
 """
 
-from scrape import soup, clean, GVSU_PREFIX
+from scrape import soup, GVSU_PREFIX
 from game import Game
 from pprint import pprint
 from tqdm import tqdm
@@ -75,18 +75,27 @@ def get_pbp(box_score_soup) -> dict[any, list]:
 
 
 def get_info(box_score_soup) -> dict[str, str]:
-    info_panel = box_score_soup.find("div", attrs={"class": "panel"})
-    dts = [d.text for d in info_panel.find_all("dt")]
-    dds = [d.text for d in info_panel.find_all("dd")]
-    # each dt is like a column name and each dd is like its data point
-    return dict(zip(dts, dds))
+    info_panel = box_score_soup.find(
+        "div",
+        attrs={"class": "panel"}
+    )
+    return dict(
+        zip(
+            # each dt is like a column name and each dd is like its data point
+            [d.text for d in info_panel.find_all("dt")],
+            [d.text for d in info_panel.find_all("dd")]
+        )
+    )
 
 
 def get_composite():
     return
 
 
-def get_pitching():
+def get_pitching(box_score_soup):
+    table2 = box_score_soup.find("table", attrs={"id": "DataTables_Table_2"})
+    table3 = box_score_soup.find("table", attrs={"id": "DataTables_Table_3"})
+    pprint(table3.text)
     return
 
 
@@ -97,13 +106,15 @@ def schedule() -> list[Game]:
 
     for yr in yrs:
         yr_sewp = soup(yr)
+		# think that we may want to get images from the bo
+		# x score soup itself so we can match them with the data
         bs, imgs = box_score_links(yr_sewp)
 
         for b in bs:
             bs_soup = soup(b)
             pbp = get_pbp(bs_soup)
             info = get_info(bs_soup)
-            print(info)
+            get_pitching(bs_soup)
 
     return games
 
