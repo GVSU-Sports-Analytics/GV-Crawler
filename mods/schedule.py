@@ -4,7 +4,9 @@ for each of the games in gv baseball history
 """
 
 from scrape import soup, clean, GVSU_PREFIX
+from game import Game
 from pprint import pprint
+from tqdm import tqdm
 import datetime
 
 START_URL: str = GVSU_PREFIX + \
@@ -33,20 +35,46 @@ def box_score_links(yr_link_soup) -> (list[str], list[str]):
         "li",
         attrs={"class": "sidearm-schedule-game-links-boxscore"}
     )]
+
+    images = []
+
+    for div in d:
+        try:
+            images.append(GVSU_PREFIX + div.find("img")["data-src"])
+        except TypeError:
+            continue
+
     return (
         [GVSU_PREFIX + i["href"] for i in a_s],
-        [GVSU_PREFIX + i.find("img")["data-src"] for i in d]
+        images
     )
 
 
+def get_pbp(box_score_soup):
+    inning_tbls = box_score_soup.find_all(
+        "table",
+        attrs={"class": "sidearm-table-play-by-play"}
+    )
+
+    pbp = {}
+    for inn in inning_tbls:
+        print(inn.find("caption").text)
+
+
 # main function of this module
-def schedule():
+def schedule() -> list[Game]:
     yrs = get_schedule_years()
+    games = []
+
     for yr in yrs:
         yr_sewp = soup(yr)
         bs, imgs = box_score_links(yr_sewp)
-        pprint(bs)
-        pprint(imgs)
+
+        for b in bs:
+            bs_soup = soup(b)
+            get_pbp(bs_soup)
+
+    return games
 
 
 if __name__ == "__main__":

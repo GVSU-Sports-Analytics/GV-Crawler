@@ -6,3 +6,4 @@ from player import Player
 class Team:
 	name: str
 	players: list[Player] = field(default_factory=lambda: [])
+	
