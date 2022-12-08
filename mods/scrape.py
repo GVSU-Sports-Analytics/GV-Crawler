@@ -10,3 +10,11 @@ def soup(url: str) -> request:
         )
     except HTTPError or ConnectionError as e:
         raise e(f"Problem in get request to \"{url}\"")
+
+
+def clean(s: str) -> str:
+    return s. \
+        replace("\n", ""). \
+        replace("\t", ""). \
+        replace("\r", ""). \
+        replace(" ", "")

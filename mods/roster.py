@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 import datetime
-from scrape import soup
+from scrape import soup, clean
 from player import Player
 from tqdm import tqdm
 
@@ -37,9 +37,9 @@ def create_players(player_divs: list[BeautifulSoup]) -> list[Player]:
             "div", attrs={"class", "sidearm-roster-player-container"}
         )
 
-        name = position_div.find("div", attrs={
+        name = clean(position_div.find("div", attrs={
             "class": "sidearm-roster-player-name"
-        }).text.strip().replace("\n", "").replace("\t", "").replace("\r", "").replace(" ", "").strip()
+        }).text)
 
         try:
             height = position_div.find("span", attrs={
