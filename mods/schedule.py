@@ -93,10 +93,19 @@ def get_composite():
 
 
 def get_pitching(box_score_soup):
-    table2 = box_score_soup.find("table", attrs={"id": "DataTables_Table_2"})
-    table3 = box_score_soup.find("table", attrs={"id": "DataTables_Table_3"})
-    pprint(table3.text)
-    return
+
+	print(box_score_soup.find("section", attrs={
+		"class": "panel",
+		"aria-label": "Team Individual Pitching Statistics"
+		}).text)
+
+	# for each table in the panel
+	
+	# find the columns
+
+	# find the rows
+
+	# for each row, match each td with its respictive col in a map
 
 
 # main function of this module
@@ -106,8 +115,10 @@ def schedule() -> list[Game]:
 
     for yr in yrs:
         yr_sewp = soup(yr)
+
 		# think that we may want to get images from the bo
 		# x score soup itself so we can match them with the data
+
         bs, imgs = box_score_links(yr_sewp)
 
         for b in bs:
