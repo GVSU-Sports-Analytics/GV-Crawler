@@ -93,19 +93,19 @@ def get_composite():
 
 
 def get_pitching(box_score_soup):
+    tables = box_score_soup.find("section", attrs={
+        "class": "panel",
+        "aria-label": "Team Individual Pitching Statistics"
+    }).find_all("table")
 
-	print(box_score_soup.find("section", attrs={
-		"class": "panel",
-		"aria-label": "Team Individual Pitching Statistics"
-		}).text)
-
-	# for each table in the panel
-	
-	# find the columns
-
-	# find the rows
-
-	# for each row, match each td with its respictive col in a map
+    tbls: list[dict[str, str]] = []
+    for tbl in tables:
+        data = tbl.find_all("td", attrs={"class": "text-center"})
+        dm = {}
+        for d in data:
+            dm[d["data-label"]] = d.text
+        tbls.append(dm)
+    return tbls
 
 
 # main function of this module
@@ -116,8 +116,8 @@ def schedule() -> list[Game]:
     for yr in yrs:
         yr_sewp = soup(yr)
 
-		# think that we may want to get images from the bo
-		# x score soup itself so we can match them with the data
+        # think that we may want to get images from the bo
+        # x score soup itself so we can match them with the data
 
         bs, imgs = box_score_links(yr_sewp)
 
@@ -125,7 +125,8 @@ def schedule() -> list[Game]:
             bs_soup = soup(b)
             pbp = get_pbp(bs_soup)
             info = get_info(bs_soup)
-            get_pitching(bs_soup)
+            pitching = get_pitching(bs_soup)
+            pprint(pitching)
 
     return games
 
