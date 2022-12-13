@@ -11,17 +11,17 @@ def config_db() -> tuple:
     )
 
 
-usr, password, host, name = config_db()
-db = mysql.connector.connect(
-    host=host,
-    user=usr,
-    password=password,
-    database=name
-)
+def connect():
+    usr, password, host, name = config_db()
+    db = mysql.connector.connect(
+        host=host,
+        user=usr,
+        password=password,
+        database=name
+    )
+    return db, db.cursor()
 
-cursor = db.cursor()
 
-
-def close_db():
-    cursor.close()
-    db.close()
+def close_db(cur, database):
+    cur.close()
+    database.close()

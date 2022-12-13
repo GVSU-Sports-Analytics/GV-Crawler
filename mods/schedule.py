@@ -6,7 +6,7 @@ for each of the games in gv baseball history
 from scrape import soup, get_all_tables, GVSU_PREFIX
 import pandas as pd
 from game import Game
-from pprint import pprint
+from tqdm import tqdm
 import datetime
 
 YR = str(datetime.date.today().year)
@@ -108,26 +108,22 @@ def schedule() -> list[Game]:
     yrs = get_schedule_years()
     games = []
 
-    for yr in yrs:
+    for yr in tqdm(yrs):
         yr_sewp = soup(yr)
-
-        # think that we may want to get images from the bo
-        # x score soup itself, so we can match them with the data
 
         bs, imgs = box_score_links(yr_sewp)
 
-        games = []
-        for b in bs:
+        for i, b in enumerate(bs):
             bs_soup = soup(b)
             info = get_info(bs_soup)
             tables = box_score_summary(str(bs_soup))
             games.append(
                 Game(
+                    opp_img=imgs[i],
                     tables=tables,
                     info=info
                 )
             )
-            print(games)
     return games
 
 

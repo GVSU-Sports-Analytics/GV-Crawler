@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 import datetime
-from scrape import soup, clean, GVSU_PREFIX
-from player import Player
+from mods.scrape import soup, clean, GVSU_PREFIX
+from mods.player import Player
 from tqdm import tqdm
 
 ROSTER_PREFIX: str = GVSU_PREFIX + "/sports/baseball/roster/"
