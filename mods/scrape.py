@@ -1,5 +1,6 @@
 from requests import request, get, HTTPError, ConnectionError
 from bs4 import BeautifulSoup
+import pandas as pd
 import random
 
 GVSU_PREFIX: str = "https://gvsulakers.com"
@@ -32,6 +33,10 @@ headers = {
 
 def random_headers():
     return headers[random.choice(list(headers.keys()))]
+
+
+def get_all_tables(url):
+    return pd.read_html(url)
 
 
 def clean(s: str) -> str:

@@ -1,10 +1,8 @@
 from dataclasses import dataclass
+from pandas import DataFrame
 
 
 @dataclass
 class Game:
-    home_team: str
-    away_team: str
     info: dict[str, str]
-    pbp: dict[str, str]
-    composite: dict[str, str]
+    tables: dict[str, DataFrame]

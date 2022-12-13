@@ -3,22 +3,20 @@ goal is to scrape the play by play data
 for each of the games in gv baseball history
 """
 
-from scrape import soup, clean, GVSU_PREFIX
+from scrape import soup, get_all_tables, GVSU_PREFIX
 import pandas as pd
 from game import Game
 from pprint import pprint
 import datetime
 
-START_URL = GVSU_PREFIX + "/sports/baseball/schedule/" + str(datetime.date.today().year)
+YR = str(datetime.date.today().year)
+START_URL = GVSU_PREFIX + "/sports/baseball/schedule/" + YR
 
 
 def get_schedule_years() -> list[str]:
     s = soup(START_URL)
-    opts = s.find(
-        "select",
-        attrs={"id": "sidearm-schedule-select-season"}
-    ).find_all("option")
-    return [GVSU_PREFIX + v["value"] for v in opts]
+    dd = s.find("select", attrs={"id": "sidearm-schedule-select-season"})
+    return [GVSU_PREFIX + v["value"] for v in dd.find_all("option")]
 
 
 def box_score_links(yr_link_soup) -> (list[str], list[str]):
@@ -86,30 +84,23 @@ def get_info(box_score_soup) -> dict[str, str]:
     )
 
 
-def get_composite():
-    return
-
-
-def get_pitching(box_score_soup):
-    tables = box_score_soup.find("section", attrs={
-        "class": "panel",
-        "aria-label": "Team Individual Pitching Statistics"
-    }).find_all("table")
-    tbls = []
-    for tbl in tables:
-        rows = tbl.find_all("tr")
-        cols = [th.text for th in rows.pop(0)]
-
-        p = {}
-        for i, row in enumerate(rows):
-            try:
-                p[row.find("a", attrs={"class": "boxscore_player_link"}).text] = [
-                    td.text for td in rows[i].find_all("td")
-                ]
-            except AttributeError:
-                continue
-        tbls.append(p)
-    return tbls
+def box_score_summary(soup_string) -> dict[str, pd.DataFrame]:
+    """
+    parses through the beautiful soup and finds the tables, returns a dictionary
+    with what each table is as the key and a dataframe or list of dataframes as values
+    :param soup_string: a bs4 BeautifulSoup object that has been converted to a stirng
+    :return: tbl[0] is the box score,
+    """
+    tbls = get_all_tables(soup_string)
+    return {
+        "Box Score": tbls[0],
+        "Scoring Summary": tbls[1],
+        "Away Team Pitching": tbls[4],
+        "Home Team Pitching": tbls[5],
+        "pbp": tbls[6: -2],
+        "Away Individual": tbls[-2],
+        "Home Individual": tbls[-1]
+    }
 
 
 # main function of this module
@@ -125,13 +116,18 @@ def schedule() -> list[Game]:
 
         bs, imgs = box_score_links(yr_sewp)
 
+        games = []
         for b in bs:
             bs_soup = soup(b)
-            pbp = get_pbp(bs_soup)
             info = get_info(bs_soup)
-            pitching = get_pitching(bs_soup)
-            pprint(pitching)
-
+            tables = box_score_summary(str(bs_soup))
+            games.append(
+                Game(
+                    tables=tables,
+                    info=info
+                )
+            )
+            print(games)
     return games
 
 
