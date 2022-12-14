@@ -2,6 +2,10 @@ import mysql.connector
 import os
 
 
+# note that we have to be a paid member in order
+# to use python anywhere database from local maching
+# and also in order to web scrape from the cloud.
+
 def config_db() -> tuple:
     return (
         os.getenv("DB_USERNAME"),
