@@ -2,7 +2,8 @@ from roster.roster import Roster
 
 
 def main():
-    Roster().update()
+    gvsu = Roster("https://gvsulakers.com")
+    gvsu.update()
 
 
 if __name__ == "__main__":

@@ -1,14 +1,37 @@
 from soup.soup import soup, clean_txt
+from dataclasses import dataclass, field
 import datetime
 
 from tqdm import tqdm
 
 
+@dataclass
 class Roster:
-    YEAR = str(datetime.datetime.today().year)
-    BSBL_PREFIX = "https://gvsulakers.com"
-    START_URL = BSBL_PREFIX + "/sports/baseball/roster/" + YEAR
-    START_SOUP = soup(START_URL)
+    """
+    Roster -> class of methods that can scrape
+    roster data for any team that has a sidearm
+    roster. The update function is the "main loop"
+    for all of these methods.
+    """
+    BSBL_PREFIX: str
+
+    # constants
+    _YR_LINK_MIDDLE = "/sports/baseball/roster/"
+    _YEAR: str = field(
+        default_factory=lambda: str(datetime.datetime.today().year)
+    )
+
+    @property
+    def YEAR(self):
+        return self._YEAR
+
+    @property
+    def START_URL(self):
+        return self.BSBL_PREFIX + self._YR_LINK_MIDDLE + self.YEAR
+
+    @property
+    def START_SOUP(self):
+        return soup(self.START_URL)
 
     @property
     def year_links(self) -> list[str]:
@@ -28,12 +51,14 @@ class Roster:
             yr_links.append(link)
         return yr_links
 
-    def connect2db(self):
+    @staticmethod
+    def connect2db(db_name):
         return
 
-    @staticmethod
-    def player_loop(players: list, tbl_name):
+    def player_loop(self, players: list, tbl_name):
 
+        # this is kind of a crazy loop, think about
+        # splitting up tasks in this loop into other funcs
         for player in players:
             # general info
             pos_txt = player.find("div", attrs={
@@ -55,9 +80,19 @@ class Roster:
             }).text.split()
             number, *_ = name_div
             name = " ".join(name_div[1:])
-            # background info
+
+            # other info
+            bg_div = player.find("div", attrs={
+                "class": "sidearm-roster-player-class-hometown"
+            }).text.split("\n")
+
             # picture
-            # add it as a row in the db
+            try:
+                img = self.BSBL_PREFIX + player.find("img")["data-src"]
+            except TypeError:
+                img = None
+
+            # add the player as a row in the db table
 
     def year_loop(self, year_links: list[str]):
         """
@@ -76,7 +111,6 @@ class Roster:
             # use the year as a table name in the database
             # each row will be a player
             year = "_" + yr.split("/")[-1]
-
             self.player_loop(players, year)
 
         return
@@ -88,7 +122,3 @@ class Roster:
         will be run each day.
         """
         self.year_loop(self.year_links)
-
-
-if __name__ == "__main__":
-    Roster().update()
