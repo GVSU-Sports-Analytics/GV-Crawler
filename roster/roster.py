@@ -2,7 +2,6 @@ from soup.soup import soup, clean_txt
 import datetime
 
 from tqdm import tqdm
-from pprint import pprint
 
 
 class Roster:
@@ -33,7 +32,7 @@ class Roster:
         return
 
     @staticmethod
-    def player_loop(players: list):
+    def player_loop(players: list, tbl_name):
 
         for player in players:
             # general info
@@ -41,13 +40,21 @@ class Roster:
                 "class": "sidearm-roster-player-position"
             }).text.split()
 
-            # some players don't have hits / throws
-            if len(pos_txt) != 5:
-                pos, height, weight, *_ = pos_txt
-            else:
+            if len(pos_txt) == 5:
                 pos, height, weight, _, hits_throws = pos_txt
+            # some players don't have hits / throws
+            elif len(pos_txt) == 4:
+                pos, height, weight, *_ = pos_txt
+            # and some only have position and height on old rosters
+            elif len(pos_txt) == 2:
+                pos, height, *_ = pos_txt
 
             # name
+            name_div = player.find("div", attrs={
+                "class": "sidearm-roster-player-name"
+            }).text.split()
+            number, *_ = name_div
+            name = " ".join(name_div[1:])
             # background info
             # picture
             # add it as a row in the db
@@ -67,9 +74,10 @@ class Roster:
             })
 
             # use the year as a table name in the database
+            # each row will be a player
             year = "_" + yr.split("/")[-1]
 
-            self.player_loop(players)
+            self.player_loop(players, year)
 
         return
 
