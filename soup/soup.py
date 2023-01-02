@@ -10,3 +10,9 @@ def soup(url: str):
             )
     except HTTPError as e:
         raise e(f"Internet connection error when trying to scrape '{url}'")
+
+
+def clean_txt(txt: str, *args):
+    for b in args:
+        txt.replace(b, "")
+    return txt
