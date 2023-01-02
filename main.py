@@ -1,4 +1,4 @@
-from roster import Roster
+from roster.roster import Roster
 
 
 def main():
