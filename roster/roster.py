@@ -6,7 +6,7 @@ from tqdm import tqdm
 
 
 @dataclass
-class Roster:
+class BaseballRoster:
     """
     Roster -> class of methods that can scrape
     roster data for any team that has a sidearm
@@ -14,6 +14,7 @@ class Roster:
     for all of these methods.
     """
     BSBL_PREFIX: str
+    DB_INFO: str
 
     # constants
     _YR_LINK_MIDDLE = "/sports/baseball/roster/"
@@ -32,6 +33,10 @@ class Roster:
     @property
     def START_SOUP(self):
         return soup(self.START_URL)
+
+    @staticmethod
+    def is_sidearm():
+        return
 
     @property
     def year_links(self) -> list[str]:

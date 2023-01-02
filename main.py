@@ -1,10 +1,25 @@
-from roster.roster import Roster
+from roster.roster import BaseballRoster
 
 
 def main():
-    gvsu = Roster("https://gvsulakers.com")
-    gvsu.update()
+    return [
+        BaseballRoster(
+            "https://gvsulakers.com",
+            "sqlite"
+        ),
+        BaseballRoster(
+            "https://dupanthers.com",
+            "sqlite"
+        )
+    ]
+
+
+def update(*args: BaseballRoster):
+    for roster in args:
+        roster.update()
 
 
 if __name__ == "__main__":
-    main()
+    update(
+        *main()
+    )
