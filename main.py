@@ -1,6 +1,9 @@
+from roster import Roster
 
 
 def main():
+    Roster().update()
+
     return
 
 
