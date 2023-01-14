@@ -34,9 +34,9 @@ class BaseballRoster:
     def START_SOUP(self):
         return soup(self.START_URL)
 
-    @staticmethod
-    def is_sidearm():
-        return
+    @property
+    def RESULTS(self):
+        return self._RESULTS
 
     @property
     def year_links(self) -> list[str]:

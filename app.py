@@ -17,7 +17,7 @@ def end_point():
         )
 
         roster.update()
-        return make_response(roster._RESULTS)
+        return make_response(roster.RESULT)
 
     return 300
 
