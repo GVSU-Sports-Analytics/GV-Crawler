@@ -2,8 +2,6 @@ from soup.soup import soup, clean_txt
 from dataclasses import dataclass, field
 import datetime
 
-from tqdm import tqdm
-
 
 @dataclass
 class BaseballRoster:
@@ -14,13 +12,15 @@ class BaseballRoster:
     for all of these methods.
     """
     BSBL_PREFIX: str
-    DB_INFO: str
 
     # constants
     _YR_LINK_MIDDLE = "/sports/baseball/roster/"
     _YEAR: str = field(
         default_factory=lambda: str(datetime.datetime.today().year)
     )
+
+    # results of the scrape
+    _RESULTS: dict = field(default_factory=lambda: {})
 
     @property
     def YEAR(self):
@@ -107,7 +107,7 @@ class BaseballRoster:
         :param year_links:
         :return:
         """
-        for yr in tqdm(year_links):
+        for yr in year_links:
             html = soup(yr)
             players = html.find_all("li", attrs={
                 "class": "sidearm-roster-player"
