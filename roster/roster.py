@@ -109,6 +109,7 @@ class BaseballRoster:
                 "weight": weight,
                 "hits/throws": hits_throws,
                 "number": number,
+                "image": img,
             }
 
     def year_loop(self, year_links: list[str]):

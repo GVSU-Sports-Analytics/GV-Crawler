@@ -1,5 +1,5 @@
 from roster.roster import BaseballRoster
-from flask import Flask, request, make_response, jsonify
+from flask import Flask, request, jsonify
 import json
 
 app = Flask(__name__)
@@ -17,11 +17,6 @@ def end_point():
         roster.update()
         return jsonify(roster.RESULTS)
     return 300
-
-
-def update(*args: BaseballRoster):
-    for roster in args:
-        roster.update()
 
 
 if __name__ == "__main__":
