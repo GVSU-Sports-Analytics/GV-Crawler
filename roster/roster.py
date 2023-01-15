@@ -60,7 +60,7 @@ class BaseballRoster:
     def connect2db(db_name):
         return
 
-    def player_loop(self, players: list, tbl_name):
+    def player_loop(self, players: list, year: str):
 
         # this is kind of a crazy loop, think about
         # splitting up tasks in this loop into other funcs
@@ -75,9 +75,14 @@ class BaseballRoster:
             # some players don't have hits / throws
             elif len(pos_txt) == 4:
                 pos, height, weight, *_ = pos_txt
+                hits_throws = None
             # and some only have position and height on old rosters
             elif len(pos_txt) == 2:
                 pos, height, *_ = pos_txt
+                weight = None
+                hits_throws = None
+            else:
+                pos, height, weight, hits_throws = None, None, None, None
 
             # name
             name_div = player.find("div", attrs={
@@ -97,7 +102,14 @@ class BaseballRoster:
             except TypeError:
                 img = None
 
-            # add the player as a row in the db table
+            # add the players information to the results dictionary
+            self._RESULTS[year][name] = {
+                "pos": pos,
+                "height": height,
+                "weight": weight,
+                "hits/throws": hits_throws,
+                "number": number,
+            }
 
     def year_loop(self, year_links: list[str]):
         """
@@ -116,6 +128,7 @@ class BaseballRoster:
             # use the year as a table name in the database
             # each row will be a player
             year = "_" + yr.split("/")[-1]
+            self._RESULTS[year] = {}
             self.player_loop(players, year)
 
         return

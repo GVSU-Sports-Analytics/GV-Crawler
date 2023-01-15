@@ -1,5 +1,5 @@
 from roster.roster import BaseballRoster
-from flask import Flask, request, make_response
+from flask import Flask, request, make_response, jsonify
 import json
 
 app = Flask(__name__)
@@ -11,14 +11,11 @@ def end_point():
         dictionary = json.loads(
             request.get_json()
         )
-
         roster = BaseballRoster(
             BSBL_PREFIX=dictionary["URL"],
         )
-
         roster.update()
-        return make_response(roster.RESULT)
-
+        return jsonify(roster.RESULTS)
     return 300
 
 
