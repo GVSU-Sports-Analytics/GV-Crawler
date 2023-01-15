@@ -1,8 +1,12 @@
 from roster.roster import BaseballRoster
 from flask import Flask, request, jsonify
+import pymysql
+import os
 import json
 
 app = Flask(__name__)
+
+
 
 
 @app.route("/", methods=["POST"])
