@@ -1,14 +1,12 @@
 from roster.roster import BaseballRoster
 from flask import Flask, request, jsonify
-import pymysql
-import os
 import json
 
 import pandas as pd
+import sqlite3
+import os
 
 app = Flask(__name__)
-
-
 
 
 @app.route("/", methods=["POST"])
@@ -26,11 +24,22 @@ def end_point():
 
 
 if __name__ == "__main__":
-    #app.run(
-    #    debug=True,
-    #    port=3000,
-    #)
+    app.run(
+        debug=True,
+        port=3000,
+    )
 
 
     def csv2sqlite():
+        wd = os.getcwd() + "/data/"
+        db = sqlite3.connect("data/gvsac.db")
+        for f in os.listdir(wd):
+            if f.split(".")[-1] == "csv":
+                fp = wd + f
+                yr = "_" + fp.split("_")[-1]
+                df = pd.read_csv(fp)
+                df.to_sql(name=f"CREATE TABLE {yr}_roster", con=db, if_exists="replace")
         return
+
+
+    csv2sqlite()
