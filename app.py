@@ -29,14 +29,14 @@ if __name__ == "__main__":
         port=3000
     )
 
-    # def csv2sqlite():
-    #     wd = os.getcwd() + "/data/"
-    #     db = sqlite3.connect("data/gvsac.db")
-    #     for f in os.listdir(wd):
-    #         if f.split(".")[-1] == "csv":
-    #             fp = wd + f
-    #             yr = fp.split("_")[-1].replace(".csv", "")
-    #             df = pd.read_csv(fp)
-    #             df.to_sql(name=f"roster_{yr}", con=db, if_exists="replace")
-    #
-    # csv2sqlite()
+    def csv2sqlite():
+        wd = os.getcwd() + "/data/"
+        db = sqlite3.connect("data/gvsac.db")
+        for f in os.listdir(wd):
+            if f.split(".")[-1] == "csv":
+                fp = wd + f
+                yr = fp.split("_")[-1].replace(".csv", "")
+                df = pd.read_csv(fp)
+                df.to_sql(name=f"baseball_roster_{yr}", con=db, if_exists="replace")
+
+    csv2sqlite()
