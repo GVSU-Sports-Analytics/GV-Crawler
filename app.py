@@ -24,19 +24,31 @@ def end_point():
 
 
 if __name__ == "__main__":
-    app.run(
-        debug=True,
-        port=3000
-    )
+    r = BaseballRoster("https://gvsulakers.com")
+    r.update()
 
-    def csv2sqlite():
-        wd = os.getcwd() + "/data/"
-        db = sqlite3.connect("data/gvsac.db")
-        for f in os.listdir(wd):
-            if f.split(".")[-1] == "csv":
-                fp = wd + f
-                yr = fp.split("_")[-1].replace(".csv", "")
-                df = pd.read_csv(fp)
-                df.to_sql(name=f"baseball_roster_{yr}", con=db, if_exists="replace")
+    db_path = os.getcwd() + "/data/gvsac.db"
+    db = sqlite3.connect(db_path)
+    cur = db.cursor()
 
-    csv2sqlite()
+    def add_tables():
+        for year in r.RESULTS:
+            cur.execute(f"""CREATE TABLE baseball_{year}
+                    (id INT PRIMARY KEY NOT NULL);""")
+
+            cols = list(r.RESULTS.keys())
+            for col in cols:
+                cur.execute(f"ALTER TABLE baseball_{year} ADD {col} TEXT;")
+
+    add_tables()
+
+    # def csv2sqlite():
+    #     wd = os.getcwd() + "/data/"
+    #     db = sqlite3.connect("data/gvsac.db")
+    #     for f in os.listdir(wd):
+    #         if f.split(".")[-1] == "csv":
+    #             fp = wd + f
+    #             yr = fp.split("_")[-1].replace(".csv", "")
+    #             df = pd.read_csv(fp)
+    #             df.to_sql(
+    #                 name=f"baseball_roster_{yr}", con=db, if_exists="replace")
