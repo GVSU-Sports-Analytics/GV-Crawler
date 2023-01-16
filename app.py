@@ -4,6 +4,8 @@ import pymysql
 import os
 import json
 
+import pandas as pd
+
 app = Flask(__name__)
 
 
@@ -24,7 +26,11 @@ def end_point():
 
 
 if __name__ == "__main__":
-    app.run(
-        debug=True,
-        port=3000,
-    )
+    #app.run(
+    #    debug=True,
+    #    port=3000,
+    #)
+
+
+    def csv2sqlite():
+        return

@@ -2,6 +2,8 @@ from soup.soup import soup, clean_txt
 from dataclasses import dataclass, field
 import datetime
 
+import pandas as pd
+
 
 @dataclass
 class BaseballRoster:
@@ -141,3 +143,4 @@ class BaseballRoster:
         will be run each day.
         """
         self.year_loop(self.year_links)
+
