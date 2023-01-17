@@ -98,7 +98,7 @@ class Roster:
 
             # picture
             try:
-                img = self.BSBL_PREFIX + player.find("img")["data-src"]
+                img = self.PREFIX + player.find("img")["data-src"]
             except TypeError:
                 img = None
 

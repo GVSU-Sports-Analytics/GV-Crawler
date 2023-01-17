@@ -1,5 +1,5 @@
-from roster.roster import Roster
 from flask import Flask, request, jsonify
+from roster.roster import Roster
 import json
 
 app = Flask(__name__)
@@ -16,11 +16,10 @@ def end_point():
         )
         roster.update()
         return jsonify(roster.RESULTS)
-    return 300
 
 
 if __name__ == "__main__":
     app.run(
         port=3000,
-        debug=True
+        debug=True,
     )
