@@ -11,8 +11,10 @@ def end_point():
         r = json.loads(
             request.get_json()
         )
+        sports = r["SPORT"].split(",")
         roster = Roster(
-            PREFIX=r["URL"],
+            prefix=r["URL"],
+            sports=sports,
         )
         roster.update()
         return jsonify(roster.RESULTS)

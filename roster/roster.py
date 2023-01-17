@@ -1,9 +1,7 @@
 from soup.soup import soup, clean_txt
-from dataclasses import dataclass, field
 import datetime
 
 
-@dataclass
 class Roster:
     """
     Roster -> class of methods that can scrape
@@ -11,41 +9,38 @@ class Roster:
     roster. The update function is the "main loop"
     for all of these methods.
     """
-    PREFIX: str
 
-    # constants
-    _YR_LINK_MIDDLE = "/sports/baseball/roster/"
-    _YEAR: str = field(
-        default_factory=lambda: str(datetime.datetime.today().year)
-    )
+    def __init__(self, prefix: str, sports: list[str]):
+        # public
+        self.PREFIX = prefix
+        self.SPORTS = sports
 
-    # results of the scrape
-    _RESULTS: dict = field(default_factory=lambda: {})
-
-    @property
-    def YEAR(self):
-        return self._YEAR
+        # private
+        self._year = str(datetime.datetime.today().year)
+        self._RESULTS: dict = {}
 
     @property
-    def START_URL(self):
-        return self.PREFIX + self._YR_LINK_MIDDLE + self.YEAR
+    def YEAR(self) -> str:
+        return self._year
 
-    @property
-    def START_SOUP(self):
-        return soup(self.START_URL)
+    def START_URL(self, sport):
+        _yr_link_middle = f"/sports/{sport}/roster/"
+        return self.PREFIX + _yr_link_middle + self.YEAR
 
     @property
     def RESULTS(self):
         return self._RESULTS
 
-    @property
-    def year_links(self) -> list[str]:
+    def START_SOUP(self, sport):
+        return soup(self.START_URL(sport))
+
+    def year_links(self, sport) -> list[str]:
         """
         year_links parses through the start_soup constant
         and returns a list of roster links, one for each year
         :return: list of roster links, one for eac season
         """
-        roster_select_options = self.START_SOUP.find("div", attrs={
+        roster_select_options = self.START_SOUP(sport).find("div", attrs={
             "class": "sidearm-roster-select"
         }).find_all("option")
 
@@ -56,11 +51,7 @@ class Roster:
             yr_links.append(link)
         return yr_links
 
-    @staticmethod
-    def connect2db(db_name):
-        return
-
-    def player_loop(self, players: list, year: str):
+    def player_loop(self, sport: str, players: list, year: str):
 
         # this is kind of a crazy loop, think about
         # splitting up tasks in this loop into other funcs
@@ -103,7 +94,7 @@ class Roster:
                 img = "NA"
 
             # add the players information to the results dictionary
-            self._RESULTS[year][name] = {
+            self._RESULTS[sport][year][name] = {
                 "pos": pos,
                 "height": height,
                 "weight": weight,
@@ -112,7 +103,7 @@ class Roster:
                 "image": img,
             }
 
-    def year_loop(self, year_links: list[str]):
+    def year_loop(self, sport, year_links: list[str]):
         """
         year_loop will iterate through each year in the
         list of year links (property defined above), parses
@@ -127,8 +118,8 @@ class Roster:
             })
 
             year = yr.split("/")[-1]
-            self._RESULTS[year] = {}
-            self.player_loop(players, year)
+            self._RESULTS[sport][year] = {}
+            self.player_loop(sport=sport, players=players, year=year)
         return
 
     def update(self):
@@ -137,4 +128,6 @@ class Roster:
         the roster data in the database. This function
         will be run each day.
         """
-        self.year_loop(self.year_links)
+        for sport in self.SPORTS:
+            self.RESULTS[sport] = {}
+            self.year_loop(sport, self.year_links(sport))
