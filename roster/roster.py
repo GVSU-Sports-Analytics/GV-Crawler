@@ -100,7 +100,7 @@ class Roster:
             try:
                 img = self.PREFIX + player.find("img")["data-src"]
             except TypeError:
-                img = None
+                img = "NA"
 
             # add the players information to the results dictionary
             self._RESULTS[year][name] = {
@@ -126,12 +126,9 @@ class Roster:
                 "class": "sidearm-roster-player"
             })
 
-            # use the year as a table name in the database
-            # each row will be a player
-            year = "_" + yr.split("/")[-1]
+            year = yr.split("/")[-1]
             self._RESULTS[year] = {}
             self.player_loop(players, year)
-
         return
 
     def update(self):
