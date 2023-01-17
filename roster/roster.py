@@ -75,14 +75,14 @@ class Roster:
             # some players don't have hits / throws
             elif len(pos_txt) == 4:
                 pos, height, weight, *_ = pos_txt
-                hits_throws = None
+                hits_throws = "NA"
             # and some only have position and height on old rosters
             elif len(pos_txt) == 2:
                 pos, height, *_ = pos_txt
-                weight = None
-                hits_throws = None
+                weight = "NA"
+                hits_throws = "NA"
             else:
-                pos, height, weight, hits_throws = None, None, None, None
+                pos, height, weight, hits_throws = "NA", "NA", "NA", "NA"
 
             # name
             name_div = player.find("div", attrs={
