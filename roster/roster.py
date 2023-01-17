@@ -2,18 +2,16 @@ from soup.soup import soup, clean_txt
 from dataclasses import dataclass, field
 import datetime
 
-import pandas as pd
-
 
 @dataclass
-class BaseballRoster:
+class Roster:
     """
     Roster -> class of methods that can scrape
     roster data for any team that has a sidearm
     roster. The update function is the "main loop"
     for all of these methods.
     """
-    BSBL_PREFIX: str
+    PREFIX: str
 
     # constants
     _YR_LINK_MIDDLE = "/sports/baseball/roster/"
@@ -30,7 +28,7 @@ class BaseballRoster:
 
     @property
     def START_URL(self):
-        return self.BSBL_PREFIX + self._YR_LINK_MIDDLE + self.YEAR
+        return self.PREFIX + self._YR_LINK_MIDDLE + self.YEAR
 
     @property
     def START_SOUP(self):
@@ -53,7 +51,7 @@ class BaseballRoster:
 
         yr_links = []
         for opt in roster_select_options:
-            link = self.BSBL_PREFIX + opt["value"]
+            link = self.PREFIX + opt["value"]
             link = clean_txt(link, " ", "\n", "\t", "\r")
             yr_links.append(link)
         return yr_links
@@ -143,4 +141,3 @@ class BaseballRoster:
         will be run each day.
         """
         self.year_loop(self.year_links)
-
